@@ -121,6 +121,9 @@ class MainWindow(QMainWindow):
 
         # Initialize current_file
         self.current_file = ''
+        
+        with open(welcome, "r") as f:
+            self.editor.setText(f.read())
 
     def open_file(self):
         file_dialog = QFileDialog()
