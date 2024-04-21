@@ -2,7 +2,7 @@ import sys
 import os
 import subprocess
 import time
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog, QMessageBox, QLineEdit, QInputDialog
 from PyQt5.QtGui import QIcon
 import PyQt5.QtCore as QtCore
 from PyQt5.Qsci import QsciScintilla, QsciLexerPython
@@ -26,6 +26,10 @@ class MainWindow(QMainWindow):
 
         # Get the geometry of the screen
         screen_geometry = QApplication.desktop().screenGeometry()
+
+
+        # ------------------------------------ Menu Bar ------------------------------- #
+
 
         # Create a menu bar
         menubar = self.menuBar()
@@ -72,6 +76,18 @@ class MainWindow(QMainWindow):
         # # Run remotely
         # run_server = QAction("Run on Server", self)
         # run_menu.addAction(run_server)
+
+
+        # View Menu
+        view_menu = menubar.addMenu("View")
+        
+        find_action = QAction("Find", self)
+        find_action.triggered.connect(self.find)
+        view_menu.addAction(find_action)
+
+
+        # ------------------------------------ Code Editor window ------------------------ #
+
 
         # Calculate the width and height of the code editor
         editor_width = int(screen_geometry.width() * 0.85)
@@ -166,7 +182,29 @@ class MainWindow(QMainWindow):
     
             global current_file
             current_file = file_path
-    
+            
+            
+    def find(self):
+        # Create an input dialog to get user input
+        find_text, ok = QInputDialog.getText(self, 'Find', 'Enter text to find:')
+        if ok:
+            # Set the cursor position to the beginning of the document
+            self.editor.setCursorPosition(0, 0)
+
+            # Find the text
+            found = self.editor.findFirst(find_text, False, False, False, False)
+            
+            # If text is found
+            if isinstance(found, tuple):  # Check if found is a tuple
+                # Get the position of the found text
+                start_position = found[0]
+                end_position = start_position + len(find_text)
+
+                # Select the found text
+                self.editor.setSelection(start_position, 0, end_position, 0)
+
+
+
 
 class local:
     def run():
