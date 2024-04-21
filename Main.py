@@ -7,6 +7,10 @@ from PyQt5.QtGui import QIcon
 import PyQt5.QtCore as QtCore
 from PyQt5.Qsci import QsciScintilla, QsciLexerPython
 
+welcome = os.path.join("Icons", "Welcome.txt")
+global current_file
+current_file = "none"
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -129,7 +133,7 @@ class MainWindow(QMainWindow):
             current_file = file_path
 
     def save_as(self):
-        global current_file  # Declare current_file as global within the method
+        global current_file # Declare current_file as global within the method
         if current_file:
             file_dialog = QFileDialog()
             file_path, _ = file_dialog.getSaveFileName(self, 'Save As', self.current_file)
@@ -141,7 +145,9 @@ class MainWindow(QMainWindow):
 
     def save(self):
         global current_file
-        if current_file:	
+        if current_file == "none":
+            self.save_as()
+        elif current_file:	
             with open(current_file, "w") as f:
                 f.write(self.editor.text())
     
