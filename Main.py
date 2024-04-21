@@ -1,7 +1,6 @@
 import sys
 import os
 import subprocess
-import time
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog, QInputDialog
 from PyQt5.QtGui import QIcon
 import PyQt5.QtCore as QtCore
