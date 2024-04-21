@@ -14,4 +14,3 @@ cwd = os.path.dirname(os.path.realpath(__file__))
 for file in files:
     extract_zip(file, cwd)
 
-
