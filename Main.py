@@ -1,7 +1,7 @@
 import sys
 import os
 import subprocess
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog, QInputDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog, QInputDialog, QVBoxLayout, QHBoxLayout, QFileSystemModel, QTreeView, QWidget
 from PyQt5.QtGui import QIcon
 import PyQt5.QtCore as QtCore
 from PyQt5.Qsci import QsciScintilla, QsciLexerPython
@@ -89,14 +89,31 @@ class MainWindow(QMainWindow):
 
 
         # Calculate the width and height of the code editor
-        editor_width = int(screen_geometry.width() * 0.85)
+        editor_width = int(screen_geometry.width() * 0.67)  # 2/3 of the screen width
         editor_height = int(screen_geometry.height() * 0.85)
+
+        # Add a layout to contain the directory viewer and the code editor
+        layout = QHBoxLayout()
+
+        # Add a directory viewer
+        self.directory_viewer = QTreeView(self)
+        self.directory_viewer.setRootIsDecorated(False)
+        self.directory_viewer.setHeaderHidden(True)
+        self.directory_viewer.clicked.connect(self.open_clicked_file)
+        layout.addWidget(self.directory_viewer)
 
         # Add a code editor
         self.editor = QsciScintilla(self)
-        self.editor.setGeometry(200, 50, editor_width, editor_height)
+        self.editor.setMarginWidth(0, 50)  # Set width for line numbers margin
+        self.editor.setMarginLineNumbers(0, True)  # Show line numbers
+        self.editor.setGeometry(0, 0, editor_width, editor_height)
         self.editor.setLexer(QsciLexerPython())  # Set lexer for Python syntax highlighting
+        layout.addWidget(self.editor, 2)  # Set the stretch factor to 2 to take up 2/3 of the space
 
+        # Set the layout
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
 
         # Set dark mode style sheet
         dark_stylesheet = """
@@ -139,6 +156,15 @@ class MainWindow(QMainWindow):
         
         with open(welcome, "r") as f:
             self.editor.setText(f.read())
+
+        # Populate directory viewer
+        self.populate_directory_viewer()
+
+    def populate_directory_viewer(self):
+        model = QFileSystemModel()
+        model.setRootPath(QtCore.QDir.rootPath())
+        self.directory_viewer.setModel(model)
+        self.directory_viewer.setRootIndex(model.index(os.path.abspath('.')))
 
     def open_file(self):
         file_dialog = QFileDialog()
@@ -202,7 +228,15 @@ class MainWindow(QMainWindow):
                 # Select the found text
                 self.editor.setSelection(start_position, 0, end_position, 0)
 
+    def open_clicked_file(self, index):
+        model = self.directory_viewer.model()
+        file_path = model.filePath(index)
+        if os.path.isfile(file_path):
+            with open(file_path, "r") as f:
+                self.editor.setText(f.read())
 
+                global current_file
+                current_file = file_path
 
 
 class local:
