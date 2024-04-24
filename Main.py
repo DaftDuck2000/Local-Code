@@ -10,6 +10,10 @@ welcome = os.path.join("Icons", "Welcome.txt")
 global current_file
 current_file = "none"
 
+supported_langs = ["txt", "py"]
+
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -69,7 +73,7 @@ class MainWindow(QMainWindow):
 
         # Run Local
         run_local = QAction("Run Locally", self)
-        run_local.triggered.connect(local.run)
+        run_local.triggered.connect(self.run)
         run_menu.addAction(run_local)
 
         # # Run remotely
@@ -232,15 +236,17 @@ class MainWindow(QMainWindow):
         model = self.directory_viewer.model()
         file_path = model.filePath(index)
         if os.path.isfile(file_path):
-            with open(file_path, "r") as f:
-                self.editor.setText(f.read())
+            extention = file_path.split(".")
+            print(extention[1])
+            if extention[1] in supported_langs:
+                with open(file_path, "r") as f:
+                    self.editor.setText(f.read())
 
-                global current_file
-                current_file = file_path
+                    global current_file
+                    current_file = file_path
 
-
-class local:
-    def run():
+    def run(self):
+        self.save()
         subprocess.run(["python", current_file])
 
 
