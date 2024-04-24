@@ -10,7 +10,7 @@ welcome = os.path.join("Icons", "Welcome.txt")
 global current_file
 current_file = "none"
 
-supported_langs = ["txt", "py"]
+supported_langs = ["txt", "py", ""]
 
 
 
@@ -184,12 +184,18 @@ class MainWindow(QMainWindow):
     def open_file(self):
         file_dialog = QFileDialog()
         file_path, _ = file_dialog.getOpenFileName(self, 'Open File')
-        if file_path:
+        extention = file_path.split(".")
+        if extention[1]:
+            pass
+        else:
+            extention[1] = "txt"
+        if extention[1] in supported_langs:
             with open(file_path, "r") as f:
                 self.editor.setText(f.read())
-                
-            global current_file
-            current_file = file_path
+
+                global current_file
+                current_file = file_path
+
               
     def open_folder(self):
         folder_dialog = QFileDialog()
@@ -254,12 +260,17 @@ class MainWindow(QMainWindow):
         file_path = model.filePath(index)
         if os.path.isfile(file_path):
             extention = file_path.split(".")
+            if extention[1]:
+                pass
+            else:
+                extention[1] = "txt"
             if extention[1] in supported_langs:
                 with open(file_path, "r") as f:
                     self.editor.setText(f.read())
 
                     global current_file
                     current_file = file_path
+
 
     def run(self):
         self.save()
