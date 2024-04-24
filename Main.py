@@ -4,13 +4,22 @@ import subprocess
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog, QInputDialog, QVBoxLayout, QHBoxLayout, QFileSystemModel, QTreeView, QWidget
 from PyQt5.QtGui import QIcon
 import PyQt5.QtCore as QtCore
-from PyQt5.Qsci import QsciScintilla, QsciLexerPython
+from PyQt5.Qsci import QsciScintilla, QsciLexerPython, QsciLexerCPP, QsciLexerJavaScript, QsciLexerJava, QsciLexerCSharp, QsciLexerHTML, QsciLexerBatch
 
 welcome = os.path.join("Icons", "Welcome.txt")
 global current_file
 current_file = "none"
 
-supported_langs = ["txt", "py", ""]
+supported_langs = {
+    "txt": None,
+    "py": QsciLexerPython(),
+    "cpp": QsciLexerCPP(),
+    "js": QsciLexerJavaScript(),
+    "java": QsciLexerJava(),
+    "cs": QsciLexerCSharp(),
+    "html": QsciLexerHTML(),
+    "bat": QsciLexerBatch(),
+}
 
 
 
@@ -116,7 +125,6 @@ class MainWindow(QMainWindow):
         self.editor.setMarginWidth(0, 50)  # Set width for line numbers margin
         self.editor.setMarginLineNumbers(0, True)  # Show line numbers
         self.editor.setGeometry(0, 0, editor_width, editor_height)
-        self.editor.setLexer(QsciLexerPython())  # Set lexer for Python syntax highlighting
         layout.addWidget(self.editor, 2)  # Set the stretch factor to 2 to take up 2/3 of the space
 
         # Set the layout
@@ -185,19 +193,19 @@ class MainWindow(QMainWindow):
         file_dialog = QFileDialog()
         file_path, _ = file_dialog.getOpenFileName(self, 'Open File')
         try:
-            extention = file_path.split(".")
-            if extention[1]:
-                pass
-            else:
-                extention[1] = "txt"
-            if extention[1] in supported_langs:
-                with open(file_path, "r") as f:
-                    self.editor.setText(f.read())
+            extension = file_path.split(".")[-1]  # Get the file extension
+            lexer = supported_langs.get(extension)
+            if lexer:
+                # Set the lexer for syntax highlighting
+                self.editor.setLexer(lexer)
+                
+            with open(file_path, "r") as f:
+                self.editor.setText(f.read())
 
-                    global current_file
-                    current_file = file_path
-        except:
-            pass
+            global current_file
+            current_file = file_path
+        except Exception as e:
+            print(e)
 
               
     def open_folder(self):
@@ -263,19 +271,19 @@ class MainWindow(QMainWindow):
         file_path = model.filePath(index)
         try:
             if os.path.isfile(file_path):
-                extention = file_path.split(".")
-                if extention[1]:
-                    pass
-                else:
-                    extention[1] = "txt"
-                if extention[1] in supported_langs:
-                    with open(file_path, "r") as f:
-                        self.editor.setText(f.read())
+                extension = file_path.split(".")[-1]  # Get the file extension
+                lexer = supported_langs.get(extension)
+                if lexer:
+                    # Set the lexer for syntax highlighting
+                    self.editor.setLexer(lexer)
 
-                        global current_file
-                        current_file = file_path
-        except:
-            pass
+                with open(file_path, "r") as f:
+                    self.editor.setText(f.read())
+
+                    global current_file
+                    current_file = file_path
+        except Exception as e:
+            print(e)
 
 
     def run(self):
