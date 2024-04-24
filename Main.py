@@ -50,6 +50,11 @@ class MainWindow(QMainWindow):
         open_action = QAction('Open', self)
         open_action.triggered.connect(self.open_file)
         file_menu.addAction(open_action)
+        
+        # Open Folder
+        open_folder_action = QAction('Open Folder', self)
+        open_folder_action.triggered.connect(self.open_folder)
+        file_menu.addAction(open_folder_action)
 
 
         #Save
@@ -169,6 +174,12 @@ class MainWindow(QMainWindow):
         model.setRootPath(QtCore.QDir.rootPath())
         self.directory_viewer.setModel(model)
         self.directory_viewer.setRootIndex(model.index(os.path.abspath('.')))
+        
+    def set_directory_viewer(self, folder_path):
+        model = QFileSystemModel()
+        model.setRootPath(folder_path)
+        self.directory_viewer.setModel(model)
+        self.directory_viewer.setRootIndex(model.index(folder_path))
 
     def open_file(self):
         file_dialog = QFileDialog()
@@ -179,6 +190,12 @@ class MainWindow(QMainWindow):
                 
             global current_file
             current_file = file_path
+              
+    def open_folder(self):
+        folder_dialog = QFileDialog()
+        folder_path = folder_dialog.getExistingDirectory(self, 'Open Folder')
+        if folder_path:
+            self.set_directory_viewer(folder_path)
 
     def save_as(self):
         global current_file # Declare current_file as global within the method
