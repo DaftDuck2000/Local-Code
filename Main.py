@@ -254,7 +254,6 @@ class MainWindow(QMainWindow):
         file_path = model.filePath(index)
         if os.path.isfile(file_path):
             extention = file_path.split(".")
-            print(extention[1])
             if extention[1] in supported_langs:
                 with open(file_path, "r") as f:
                     self.editor.setText(f.read())
