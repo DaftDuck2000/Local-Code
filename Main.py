@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
 
 
         # Open File
-        open_action = QAction('Open', self)
+        open_action = QAction('Open File', self)
         open_action.triggered.connect(self.open_file)
         file_menu.addAction(open_action)
         
@@ -184,17 +184,20 @@ class MainWindow(QMainWindow):
     def open_file(self):
         file_dialog = QFileDialog()
         file_path, _ = file_dialog.getOpenFileName(self, 'Open File')
-        extention = file_path.split(".")
-        if extention[1]:
-            pass
-        else:
-            extention[1] = "txt"
-        if extention[1] in supported_langs:
-            with open(file_path, "r") as f:
-                self.editor.setText(f.read())
+        try:
+            extention = file_path.split(".")
+            if extention[1]:
+                pass
+            else:
+                extention[1] = "txt"
+            if extention[1] in supported_langs:
+                with open(file_path, "r") as f:
+                    self.editor.setText(f.read())
 
-                global current_file
-                current_file = file_path
+                    global current_file
+                    current_file = file_path
+        except:
+            pass
 
               
     def open_folder(self):
@@ -258,18 +261,21 @@ class MainWindow(QMainWindow):
     def open_clicked_file(self, index):
         model = self.directory_viewer.model()
         file_path = model.filePath(index)
-        if os.path.isfile(file_path):
-            extention = file_path.split(".")
-            if extention[1]:
-                pass
-            else:
-                extention[1] = "txt"
-            if extention[1] in supported_langs:
-                with open(file_path, "r") as f:
-                    self.editor.setText(f.read())
+        try:
+            if os.path.isfile(file_path):
+                extention = file_path.split(".")
+                if extention[1]:
+                    pass
+                else:
+                    extention[1] = "txt"
+                if extention[1] in supported_langs:
+                    with open(file_path, "r") as f:
+                        self.editor.setText(f.read())
 
-                    global current_file
-                    current_file = file_path
+                        global current_file
+                        current_file = file_path
+        except:
+            pass
 
 
     def run(self):
