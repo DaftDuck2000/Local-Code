@@ -84,9 +84,10 @@ class MainWindow(QMainWindow):
         run_local.triggered.connect(self.run)
         run_menu.addAction(run_local)
 
-        # # Run remotely
-        # run_server = QAction("Run on Server", self)
-        # run_menu.addAction(run_server)
+        # Run remotely
+        run_server = QAction("Run in Cloud", self)
+        run_server.triggered.connect(self.cloud_run)
+        run_menu.addAction(run_server)
 
 
         # View Menu
@@ -335,6 +336,30 @@ class MainWindow(QMainWindow):
     def run(self):
         self.save()
         subprocess.run(["python", current_file])
+        
+    def cloud_run(self):
+        self.save()
+
+        import socket
+        host = "86.161.201.31"
+        port = 8000
+        
+        file_to_send = current_file
+        
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((host, port))
+        
+        with open(file_to_send, "rb") as file:
+            while True:
+                data = file.read(1024)
+                if not data:
+                    break
+                client_socket.sendall(data)
+                
+        print("File sent successfully")
+        client_socket.close()
+            
+        
         
 
 
