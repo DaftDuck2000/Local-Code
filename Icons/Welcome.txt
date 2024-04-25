@@ -3,13 +3,14 @@
             Creator: DaftDuck 
 Source Code: https://github.com/DaftDuck2000/Local-Code
 
-These languages are the currently planed supported languages:    (X = not yet supported)
+Currently supported langs:
  - Python 
- - C++ X
- - Javascript X
- - Java X
- - C# X
- - Html X
- - Batch X
 
 
+PLanned to support in the futer:
+ - C++ 
+ - Javascript 
+ - Java 
+ - C# 
+ - Html 
+ - Batch 
