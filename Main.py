@@ -4,22 +4,16 @@ import subprocess
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog, QInputDialog, QVBoxLayout, QHBoxLayout, QFileSystemModel, QTreeView, QWidget
 from PyQt5.QtGui import QIcon
 import PyQt5.QtCore as QtCore
-from PyQt5.Qsci import QsciScintilla, QsciLexerPython, QsciLexerCPP, QsciLexerJavaScript, QsciLexerJava, QsciLexerCSharp, QsciLexerHTML, QsciLexerBatch
+from PyQt5.Qsci import QsciScintilla, QsciLexerPython
 
 welcome = os.path.join("Icons", "Welcome.txt")
 global current_file
 current_file = "none"
 
-supported_langs = {
-    "txt": None,
-    "py": QsciLexerPython(),
-    "cpp": QsciLexerCPP(),
-    "js": QsciLexerJavaScript(),
-    "java": QsciLexerJava(),
-    "cs": QsciLexerCSharp(),
-    "html": QsciLexerHTML(),
-    "bat": QsciLexerBatch(),
-}
+supported_langs = [
+    "txt",
+    "py",
+]
 
 
 
@@ -126,6 +120,8 @@ class MainWindow(QMainWindow):
         self.editor.setMarginLineNumbers(0, True)  # Show line numbers
         self.editor.setGeometry(0, 0, editor_width, editor_height)
         layout.addWidget(self.editor, 2)  # Set the stretch factor to 2 to take up 2/3 of the space
+        self.editor.setLexer(QsciLexerPython())
+
 
         # Set the layout
         central_widget = QWidget()
@@ -193,17 +189,14 @@ class MainWindow(QMainWindow):
         file_dialog = QFileDialog()
         file_path, _ = file_dialog.getOpenFileName(self, 'Open File')
         try:
-            extension = file_path.split(".")[-1]  # Get the file extension
-            lexer = supported_langs.get(extension)
-            if lexer:
-                # Set the lexer for syntax highlighting
-                self.editor.setLexer(lexer)
-                
-            with open(file_path, "r") as f:
-                self.editor.setText(f.read())
+            extension = file_path.split(".") # Get the file extension
+            
+            if extension[1] in supported_langs:    
+                with open(file_path, "r") as f:
+                    self.editor.setText(f.read())
 
-            global current_file
-            current_file = file_path
+                global current_file
+                current_file = file_path
         except Exception as e:
             print(e)
 
@@ -234,17 +227,11 @@ class MainWindow(QMainWindow):
                 f.write(self.editor.text())
     
     def new_file(self):
-        file_dialog = QFileDialog()
-        file_path, _ = file_dialog.getSaveFileName(self, 'New FIle', self.current_file)
-        if file_path:
-            with open(file_path, "w") as f:
-                f.write("# - Happy Coding! - #")
-
-            with open(file_path, "r") as f:
-                self.editor.setText(f.read())
-    
-            global current_file
-            current_file = file_path
+        global current_file
+        if not current_file == "none":
+            self.save()
+        self.editor.setText("# New File #")
+        current_file = "none"
             
             
     def find(self):
@@ -271,14 +258,11 @@ class MainWindow(QMainWindow):
         file_path = model.filePath(index)
         try:
             if os.path.isfile(file_path):
-                extension = file_path.split(".")[-1]  # Get the file extension
-                lexer = supported_langs.get(extension)
-                if lexer:
-                    # Set the lexer for syntax highlighting
-                    self.editor.setLexer(lexer)
-
-                with open(file_path, "r") as f:
-                    self.editor.setText(f.read())
+                extension = file_path.split(".") # Get the file extension
+                
+                if extension[1] in supported_langs:
+                    with open(file_path, "r") as f:
+                        self.editor.setText(f.read())
 
                     global current_file
                     current_file = file_path
@@ -299,3 +283,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
