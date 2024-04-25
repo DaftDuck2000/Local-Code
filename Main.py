@@ -158,8 +158,38 @@ class MainWindow(QMainWindow):
             background-color: #555;
             color: #fff;
         }
+        
+        QsciScintilla QScrollBar:vertical {
+            background-color: #333;
+            color: #fff;
+            width: 15px;
+        }
+        QsciScintilla QScrollBar:horizontal {
+            background-color: #333;
+            color: #fff;
+            height: 15px;
+        }
+        QsciScintilla QWidget {
+            color: #fff;
+            background-color: #333;
+            font-family: Courier New;
+            font-size: 12pt;
+        }
+        
         """
         self.setStyleSheet(dark_stylesheet)
+        
+        editor_textarea_stylesheet = """
+        QsciScintilla QWidget {
+            background-color: #333;
+            color: #fff;
+            font-family: Courier New;
+            font-size: 12pt;
+        }
+        """
+        self.editor.SendScintilla(self.editor.SCI_STYLESETSIZE, 1, 12)  # Set font size
+        self.editor.setStyleSheet(editor_textarea_stylesheet)
+
 
         # Align text to the top of the code editor
         self.editor.SendScintilla(self.editor.SCI_SETVSCROLLBAR, 0)
@@ -179,11 +209,43 @@ class MainWindow(QMainWindow):
         self.directory_viewer.setModel(model)
         self.directory_viewer.setRootIndex(model.index(os.path.abspath('.')))
         
+        # Set dark mode stylesheet for the directory viewer
+        directory_stylesheet = """
+        QTreeView {
+            background-color: #333;
+            color: #fff;
+        }
+        QTreeView::item {
+            padding: 5px;
+        }
+        QTreeView::item:selected {
+            background-color: #555;
+            color: #fff;
+        }
+        """
+        self.directory_viewer.setStyleSheet(directory_stylesheet)
+        
     def set_directory_viewer(self, folder_path):
         model = QFileSystemModel()
         model.setRootPath(folder_path)
         self.directory_viewer.setModel(model)
         self.directory_viewer.setRootIndex(model.index(folder_path))
+        
+        # Set dark mode stylesheet for the directory viewer
+        directory_stylesheet = """
+        QTreeView {
+            background-color: #333;
+            color: #fff;
+        }
+        QTreeView::item {
+            padding: 5px;
+        }
+        QTreeView::item:selected {
+            background-color: #555;
+            color: #fff;
+        }
+        """
+        self.directory_viewer.setStyleSheet(directory_stylesheet)
 
     def open_file(self):
         file_dialog = QFileDialog()
@@ -273,6 +335,7 @@ class MainWindow(QMainWindow):
     def run(self):
         self.save()
         subprocess.run(["python", current_file])
+        
 
 
 def main():
