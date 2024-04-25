@@ -7,7 +7,7 @@ Currently supported langs:
  - Python 
 
 
-PLanned to support in the futer:
+PLanned to support in the future:
  - C++ 
  - Javascript 
  - Java 
